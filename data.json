@@ -1,14 +1,37 @@
 [
     {
-        "title": "Fourth Wing",
-        "author": "Rebecca Yarros"
+        "category": "Longest Book",
+        "type": "book",
+        "title": "Kingdom of Ash",
+        "author": "Sarah J. Maas",
+        "cover": "https://covers.openlibrary.org/b/id/13316184-L.jpg"
     },
     {
-        "title": "A Court of Mist and Fury",
-        "author": "Sarah J. Maas"
+        "category": "Favorite Read",
+        "type": "book",
+        "title": "The Knight and the Moth",
+        "author": "Rachel Gillig",
+        "cover": "https://covers.openlibrary.org/b/id/15099316-L.jpg"
     },
     {
-        "title": "Iron Flame",
-        "author": "Rebecca Yarros"
+        "category": "A Book That Made Me Sob",
+        "type": "book",
+        "title": "Godd Spirits",
+        "author": "B.K Borison",
+        "cover": "https://covers.openlibrary.org/b/id/15108148-L.jpg"
+    },
+    {
+        "category": "Favorite Cover",
+        "type": "book",
+        "title": "When the Moon Hatched",
+        "author": "Sarah A. Parker",
+        "cover": "https://covers.openlibrary.org/b/id/14800094-L.jpg"
+    },
+    {
+        "category": "Unexpected Gem",
+        "type": "book",
+        "title": "We Solve Murders",
+        "author": "Richard Osman",
+        "cover": "https://covers.openlibrary.org/b/id/14835256-L.jpg"
     }
 ]

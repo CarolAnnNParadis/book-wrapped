@@ -1,141 +1,292 @@
-/* ----- Global reset ----- */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+@font-face {
+  font-family: 'PixelOperatorMono';
+  src: url('assets/fonts/PixelOperatorMono.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-/* ----- Base styles ----- */
+@keyframes float {
+  0%   { transform: translateY(0px) rotate(0deg); }
+  25%  { transform: translateY(-4px) rotate(-1deg); }
+  50%  { transform: translateY(0px) rotate(0deg); }
+  75%  { transform: translateY(4px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.card {
+  font-family: 'PixelOperatorMono', monospace;
+}
+
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: #f9f7f4; /* Soft book-ish background */
-    color: #333;
-    min-height: 100vh;
+    background: #111;
+    padding: 20px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 1.5rem;
-}
-
-/* ----- Header ----- */
-header {
-    margin-bottom: 1.2rem;
-}
-
-header h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    color: #2a2a2a;
-    text-align: center;
-}
-
-/* ----- Main container ----- */
-#book-container {
+    justify-content: center;
+    font-family: sans-serif;
+  }
+  
+  .map-container {
+    position: relative;
+    overflow: hidden;
+    width: 1024px;
+    height: 1536px;
+  }
+  
+  .map {
     width: 100%;
-    max-width: 450px; /* Perfect size for mobile & reels */
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 1rem;
+    height: 100%;
+    display: block;
+    z-index: 1;
+  }
+  
+  .debug-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    display: none;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+  }
+  
+  .path {
+    position: absolute;
+    top: 0;
+    left: 0;
+  
+    width: 100%;
+    height: 100%;
+  
+    z-index: 5;           /* 👈 THIS is the key */
+    pointer-events: none;
+    fill: none;
+  }
+  
+  .path path {
+    stroke: #7a5a3a;        /* darker, earthy brown */
+    stroke-width: 10;
+  
+    stroke-dasharray: 10 10; /* square pixel blocks */
+    stroke-linecap: butt;
+    shape-rendering: crispEdges;
+  
+    opacity: 0.4;            /* 👈 key part */
+    fill: none;
+  }
+  
+
+  /* shadow layer (bottom) */
+.road-shadow {
+  stroke: #8a6a47;
+  stroke-width: 10;
+  stroke-dasharray: 10 10;
+  stroke-linecap: butt;
+  shape-rendering: crispEdges;
+  transform: translate(2px, 2px); /* pixel offset */
+  fill: none;
 }
 
-/* ----- Basic card (will animate later) ----- */
-.book-card {
-    background: #ffffff;
-    padding: 1.2rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    cursor: pointer;
+/* main road (top) */
+.road-main {
+  stroke: #c69c6d;
+  stroke-width: 8;
+  stroke-dasharray: 10 10;
+  stroke-linecap: butt;
+  shape-rendering: crispEdges;
+  fill: none;
 }
 
-/* Hover effect (optional) */
-.book-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
+  
 
-/* Title inside card */
-.book-card h2 {
-    font-size: 1.1rem;
-    font-weight: 500;
-}
-
-/* PAGE LAYOUT */
-body {
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    background: #faf7ff;
-    padding-bottom: 50px;
-}
-
-h2 {
-    text-align: center;
-    margin-top: 40px;
-    margin-bottom: 20px;
-    font-size: 2rem;
-    color: #2d1b4e;
-}
-
-/* STATS CARDS */
-#stats-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-    padding: 0 20px 40px;
-}
-
-.stat-card {
-    background: linear-gradient(135deg, #ab47ff, #ff6ec4);
-    color: white;
-    padding: 25px;
-    border-radius: 20px;
-    text-align: center;
-    font-weight: 600;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15);
-    font-size: 1.3rem;
-}
-
-/* BOOK CARDS */
-#book-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 25px;
-    padding: 0 20px;
-}
-
-.book-card {
+  .card-wrapper {
+    display: none;
+    position: absolute;
+    top: 0;   /* will be overwritten by JS if using motion path */
+    left: 0;  /* same here */
+    z-index: 20;
+    width: 180px;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+    transform-origin: center center;
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  
+  .card-wrapper.show {
+    display: block;
+    opacity: 1;
+  }
+  
+  
+  
+  /* Pixel jagged border */
+  .card-wrapper::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border: 2px solid black;
+    pointer-events: none;
+    box-shadow:
+      1px 0 0 black, 0 1px 0 black, 1px 1px 0 black,
+      -1px 0 0 black, 0 -1px 0 black, -1px -1px 0 black,
+      2px 0 0 black, 0 2px 0 black, 2px 2px 0 black,
+      -2px 0 0 black, 0 -2px 0 black, -2px -2px 0 black;
+  }
+  
+  /* Card */
+  .card {
     background: white;
-    border-radius: 18px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
-    padding: 15px;
-    transition: transform 0.2s ease;
-}
-
-.book-card:hover {
-    transform: scale(1.03);
-}
-
-.book-cover {
+    padding: 12px;
+    font-family: 'PixelOperatorMono', monospace; /* readable pixel font */
+    font-size: 16px;
+    text-align: center;
+    box-sizing: border-box;
     width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-radius: 12px;
+    position: relative;
+  }
+
+  .card-wrapper.first-card .cover {
+    width: 88%;       /* smaller than full width */
+    max-height: 172px; /* constrain the height */
+    margin: 0 auto 6px auto; /* center it and keep bottom margin */
+    image-rendering: pixelated;
+    display: block;
+  }
+  
+  .triangle {
+    position: absolute;
+    bottom: -12px; /* tip sits on stop */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column-reverse; /* stack bottom → top */
+    align-items: center;
+    gap: 0;
+  }
+  
+  
+  /* Each row of the triangle */
+  .triangle-row {
+    display: flex;
+    gap: 0; /* pixels touch each other */
+  }
+  
+  /* Each block in a row */
+  .triangle-block {
+    width: 4px;
+    height: 4px;
+    background: black;
+  }
+  
+  
+  
+  /* Text styling */
+  .card .category {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+  
+  .card .title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .card .author {
+    font-size: 14px;
+    color: #333;
+  }
+  
+  .card .value {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .card .cover {
+    width: 100%;
+    height: auto;
+    margin-bottom: 6px;
+    image-rendering: pixelated;
+  }
+  
+  .token {
+    width: 400px;        /* increase size here */
+    height: 400px;
+    position: absolute;
+    transform-origin: center center;
+    z-index: 50;
+    display: flex;
+    align-items: flex-end;
+  }
+  
+  .token img {
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    object-fit: contain;   /* keeps aspect ratio */
+    display: block;
+  }
+  
+  
+  #catSprite {
+    width: 400px;   /* your new desired size */
+    height: 400px;
+    image-rendering: pixelated;
+    transform-origin: center;
+  }
+  
+  .start-btn {
+    font-family: 'PixelOperatorMono', monospace;
+    font-size: 22px;
+    letter-spacing: 1px;
+  
+    padding: 6px 10px;
+    background: #2f6fff; /* not too light, not too dark */
+    color: white;
+  
+    border: 2px solid #0b1d3a;
+    box-shadow: 2px 2px 0 #0b1d3a;
+  
+    cursor: pointer;
+    z-index: 60;
+  
+    image-rendering: pixelated;
+  }
+  
+  .start-btn:hover {
+    transform: translateX(-50%) translateY(-1px);
+    box-shadow: 3px 3px 0 #0b1d3a;
+  }
+  
+  .start-btn:active {
+    transform: translateX(-50%) translateY(1px);
+    box-shadow: 1px 1px 0 #0b1d3a;
+  }
+
+  .final-card {
+    display: flex !important;  /* overrides display:none from .card-wrapper */
+    z-index: 100;              /* make sure it’s above map and token */
+    pointer-events: none;      /* optional, if you don’t want clicks */
+  }
+  
+  .final-card .card {
+  background: #2f6fff;
+  color: white;
+  font-family: 'PixelOperatorMono', monospace;
+  font-size: 14px;
+  padding: 12px 18px;
+  border: 2px solid #0b1d3a;
+  box-shadow: 4px 4px 0 #0b1d3a;
+  text-align: center;
 }
 
-.book-info {
-    margin-top: 12px;
-}
-
-.book-info h3 {
-    margin: 8px 0;
-    font-size: 1.1rem;
-    color: #2d1b4e;
-}
-
-.book-info p {
-    margin: 4px 0;
-    color: #5b4b7a;
-    font-size: 0.9rem;
-}
+  
+  .pixel-confetti {
+    image-rendering: pixelated;
+    pointer-events: none;
+  }
+  
+  
+  
